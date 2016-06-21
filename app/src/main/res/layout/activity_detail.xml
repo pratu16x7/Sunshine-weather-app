@@ -4,6 +4,6 @@
     android:name="com.example.pratu16x7.sunshinefromscratch.DetailActivityFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:layout="@layout/fragment_detail"
+
     tools:context="com.example.pratu16x7.sunshinefromscratch.DetailActivity"
     tools:ignore="MergeRootFrame"/>

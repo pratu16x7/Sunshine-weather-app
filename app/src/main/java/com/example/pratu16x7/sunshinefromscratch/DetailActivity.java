@@ -17,6 +17,7 @@ public class DetailActivity extends AppCompatActivity {
                     .add(R.id.container, new DetailActivityFragment())
                     .commit();
         }
+
     }
 
 
