@@ -12,8 +12,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -91,7 +93,14 @@ public class ForecastFragment extends Fragment {
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(myForecastAdapter);
-
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CharSequence text = myForecastAdapter.getItem(position);
+                Toast toast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
 
         return rootView;
     }
@@ -304,7 +313,7 @@ public class ForecastFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String[] strings) {
-            //this meathod runs on the UI thread
+            //this method runs on the UI thread
             // last step for unit 2
 
             if (strings != null){
