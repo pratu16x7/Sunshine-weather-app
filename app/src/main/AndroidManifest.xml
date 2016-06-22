@@ -12,6 +12,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -22,6 +23,7 @@
         </activity>
         <activity
             android:name=".DetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_detail"
             android:parentActivityName=".MainActivity">
             <meta-data
@@ -30,12 +32,14 @@
         </activity>
         <activity
             android:name=".SettingsActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.pratu16x7.sunshinefromscratch.MainActivity" />
         </activity>
+
     </application>
 
 </manifest>
