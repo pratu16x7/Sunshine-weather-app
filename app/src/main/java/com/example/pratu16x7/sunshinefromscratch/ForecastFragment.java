@@ -1,9 +1,11 @@
 package com.example.pratu16x7.sunshinefromscratch;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -63,12 +65,26 @@ public class ForecastFragment extends Fragment {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("1253372"); // execute(), not doInBackground() :P
+            updateWeather();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateWeather(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String code = sharedPref.getString(getString(R.string.pref_location_key) ,getString(R.string.pref_location_default) );
+
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        weatherTask.execute(code); // execute(), not doInBackground() :P  "1253372"
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
     }
 
     @Override
@@ -89,7 +105,7 @@ public class ForecastFragment extends Fragment {
 
         List<String> fakedata = new ArrayList<>(Arrays.asList(data));
 
-        myForecastAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, fakedata);
+        myForecastAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, fakedata);
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(myForecastAdapter);
@@ -237,7 +253,7 @@ public class ForecastFragment extends Fragment {
                 // http://openweathermap.org/API#forecast
 
                 final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
-                final String QUERY_PARAM = "id";
+                final String QUERY_PARAM = "q";
                 final String FORMAT_PARAM = "mode";
                 final String UNITS_PARAM = "units";
                 final String DAYS_PARAM = "cnt";
@@ -283,6 +299,7 @@ public class ForecastFragment extends Fragment {
                     return null;
                 }
                 forecastJsonStr = buffer.toString();
+                //Log.v("WEEEEEEE", forecastJsonStr);
 
 
                 weatherData = getWeatherDataFromJson(forecastJsonStr, daysCount);
@@ -316,16 +333,42 @@ public class ForecastFragment extends Fragment {
 
         }
 
+        public String changeTempUnits(String dayForecast){
+
+            int l = dayForecast.length();
+            String high = dayForecast.substring(l - 5, l - 3);
+            String low = dayForecast.substring(l - 2, l);
+            int highn = Integer.parseInt(high);
+            int lown = Integer.parseInt(low);
+            int high_f = ((highn * 9) / 5) + 32;
+            int low_f = ((lown * 9) / 5) + 32;
+            return dayForecast.substring(0, l-5) + high_f + "/" + low_f;
+
+        }
+
         @Override
         protected void onPostExecute(String[] strings) {
             //this method runs on the UI thread
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String units = sharedPref.getString(getString(R.string.pref_units_key) ,getString(R.string.pref_units_default) );
+            Log.v("WEEEEEEE", units);
+
             // last step for unit 2
 
             if (strings != null){
                 myForecastAdapter.clear();
-                for (String s : strings){
-                    myForecastAdapter.add(s);
+                if(units.equals("2")){
+                    for (String s : strings){
+                        s = changeTempUnits(s);
+                        myForecastAdapter.add(s);
+                    }
+
+                }else{
+                    for (String s : strings){
+                        myForecastAdapter.add(s);
+                    }
                 }
+
 
             }
 

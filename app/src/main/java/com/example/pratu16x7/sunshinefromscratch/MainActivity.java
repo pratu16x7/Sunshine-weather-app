@@ -1,6 +1,10 @@
 package com.example.pratu16x7.sunshinefromscratch;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,10 +38,32 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+
+        if (id == R.id.action_view_map) {
+            openPreferredLocationOnMap();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void openPreferredLocationOnMap(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String code = sharedPref.getString(getString(R.string.pref_location_key) ,getString(R.string.pref_location_default) );
+        final String BASE = "geo:0,0?";
+        final String QUERY_PARAM = "q";
+        Uri geoLocation = Uri.parse(BASE).buildUpon()
+                .appendQueryParameter(QUERY_PARAM, code).build();
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+
     }
 
     /**
