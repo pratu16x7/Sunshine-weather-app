@@ -2,9 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.pratu16x7.sunshinefromscratch.DetailActivity">
-
-
-
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"

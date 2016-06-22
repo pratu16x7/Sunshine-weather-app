@@ -35,7 +35,7 @@ public class DetailActivityFragment extends Fragment {
 
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)){
             forecastStr = intent.getStringExtra(Intent.EXTRA_TEXT);
-            ((TextView)rootView.findViewById(R.id.hello)).setText(forecastStr);
+            ((TextView)rootView.findViewById(R.id.details)).setText(forecastStr);
         }
         return rootView;
     }
@@ -43,7 +43,9 @@ public class DetailActivityFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.detailfragment, menu);
+        //menu.clear();
+        //inflater.inflate(R.menu.menu_detail, menu);
+        //inflater.inflate(R.menu.detailfragment, menu);    //Dunno why this puts TWO share icons -_-
 
         // Locate MenuItem with ShareActionProvider
         MenuItem item = menu.findItem(R.id.action_share);
