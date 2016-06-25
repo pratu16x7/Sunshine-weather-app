@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
                     .add(R.id.container, new ForecastFragment())
                     .commit();
         }
+        Log.v("WEEEEEEE", "onCreate");
     }
 
     @Override
@@ -64,6 +66,36 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.v("WEEEEEEE", "onPause");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onStart();
+        Log.v("WEEEEEEE", "onResume");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.v("WEEEEEEE", "onStart");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.v("WEEEEEEE", "onStop");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.v("WEEEEEEE", "onDestroy");
     }
 
     /**

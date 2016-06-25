@@ -3,6 +3,7 @@ package com.example.pratu16x7.sunshinefromscratch;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -18,7 +19,7 @@ public class DetailActivity extends AppCompatActivity {
                     .add(R.id.container, new DetailActivityFragment())
                     .commit();
         }
-
+        Log.v("DEEEEEEE", "onCreate");
     }
 
 
@@ -45,5 +46,36 @@ public class DetailActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.v("DEEEEEEE", "onPause");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onStart();
+        Log.v("DEEEEEEE", "onResume");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.v("DEEEEEEE", "onStart");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.v("DEEEEEEE", "onStop");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.v("DEEEEEEE", "onDestroy");
+    }
+
 
 }
