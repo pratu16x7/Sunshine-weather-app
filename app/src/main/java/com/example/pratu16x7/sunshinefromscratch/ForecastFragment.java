@@ -97,19 +97,17 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     private void updateWeather(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String code = sharedPref.getString(getString(R.string.pref_location_key) ,getString(R.string.pref_location_default) );
+        String zipcode = sharedPref.getString(getString(R.string.pref_location_key) ,getString(R.string.pref_location_default) );
 
         FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
-        weatherTask.execute(code); // execute(), not doInBackground() :P  "1253372"
+        weatherTask.execute(zipcode); // execute(), not doInBackground() :P  "1253372"
 
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
+    protected void onLocationChanged(){
         updateWeather();
-    }
+        getLoaderManager().restartLoader(myLoaderID, null, this);
 
+    }
 
     // Loader implemented
 

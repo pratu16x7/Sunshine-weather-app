@@ -10,7 +10,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import static com.example.pratu16x7.sunshinefromscratch.Utility.getPreferredLocation;
+
 public class MainActivity extends AppCompatActivity {
+
+    String mLocation;
+    private static final String FORECASTFRAGMENT_TAG = "FFTAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,9 +23,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new ForecastFragment())
+                    .add(R.id.container, new ForecastFragment(), FORECASTFRAGMENT_TAG)
                     .commit();
         }
+        mLocation = getPreferredLocation(this);
         Log.v("WEEEEEEE", "onCreate");
     }
 
@@ -77,6 +83,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onStart();
+        String location = Utility.getPreferredLocation(this);
+        if (location != null && !location.equals(mLocation)){
+            ForecastFragment ff = (ForecastFragment)getSupportFragmentManager()
+                    .findFragmentByTag(FORECASTFRAGMENT_TAG);
+            if (ff != null){ ff.onLocationChanged(); }
+            mLocation = location;
+        }
         Log.v("WEEEEEEE", "onResume");
     }
 
