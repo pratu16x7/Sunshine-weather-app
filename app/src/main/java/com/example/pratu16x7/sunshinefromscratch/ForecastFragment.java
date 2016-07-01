@@ -1,5 +1,6 @@
 package com.example.pratu16x7.sunshinefromscratch;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -165,13 +166,17 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //String forecast = myForecastAdapter.getItem(position);
-                //Toast toast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
-                //toast.show();
-
-//                Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
-//                detailIntent.putExtra(Intent.EXTRA_TEXT, forecast);
-//                startActivity(detailIntent);
+                // CursorAdapter returns a cursor at the correct position for getItem(), or null
+                // if it cannot seek to that position.
+                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+                if (cursor != null) {
+                    String locationSetting = Utility.getPreferredLocation(getActivity());
+                    Intent intent = new Intent(getActivity(), com.example.pratu16x7.sunshinefromscratch.DetailActivity.class)
+                            .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
+                                    locationSetting, cursor.getLong(COL_WEATHER_DATE)
+                            ));
+                    startActivity(intent);
+                }
 
             }
         });

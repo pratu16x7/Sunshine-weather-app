@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
+
     >
 
-<!--Why does adding padding in relative layout double all child views ?!-->
+<!--Why does adding padding in relative layout double all child views ?!
+    And yet, no difference if in TextView
+-->
     <TextView
+        android:paddingLeft="33dp"
         android:text="TextView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
