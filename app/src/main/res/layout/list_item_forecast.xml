@@ -5,7 +5,6 @@
     android:id="@+id/list_item_forecast_linear"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
-    android:padding="10dp"
     >
     <ImageView
         android:id="@+id/list_item_icon"
