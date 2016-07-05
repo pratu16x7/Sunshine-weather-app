@@ -6,6 +6,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import static com.example.pratu16x7.sunshinefromscratch.ForecastFragment.COL_WEATHER_DATE;
 import static com.example.pratu16x7.sunshinefromscratch.ForecastFragment.COL_WEATHER_DESC;
@@ -64,5 +65,23 @@ public class ForecastAdapter extends CursorAdapter {
 
 //        TextView tv = (TextView)view;
 //        tv.setText(convertCursorRowToUXFormat(cursor));
+        Boolean isMetric = Utility.isMetric(mContext);
+
+        TextView highTv = (TextView)view.findViewById(R.id.list_item_high_textview);
+        String highText = Utility.formatTemperature(cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP),
+                isMetric) + "°";
+        highTv.setText(highText);
+
+        TextView lowTv = (TextView)view.findViewById(R.id.list_item_low_textview);
+        String lowText = Utility.formatTemperature(cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP),
+                isMetric) + "°";
+        lowTv.setText(lowText);
+
+        ((TextView)view.findViewById(R.id.list_item_forecast_textview)).setText(cursor.getString(COL_WEATHER_DESC));
+
+        TextView dateTv = (TextView)view.findViewById(R.id.list_item_date_textview);
+        String date = Utility.getFriendlyDayString(context, cursor.getLong(COL_WEATHER_DATE));
+        dateTv.setText(date);
+
     }
 }

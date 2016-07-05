@@ -20,9 +20,15 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class Utility {
+    // Format used for storing dates in the database.  ALso used for converting those strings
+    // back into date objects for comparison/processing.
+    public static final String DATE_FORMAT = "yyyyMMdd";
+
     public static String getPreferredLocation(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString(context.getString(R.string.pref_location_key),
@@ -50,4 +56,61 @@ public class Utility {
         Date date = new Date(dateInMillis);
         return DateFormat.getDateInstance().format(date);
     }
+
+    /**
+     * Helper method to convert the database representation of the date into something to display
+     * to users.  As classy and polished a user experience as "20140102" is, we can do better.
+     *
+     * @param context Context to use for resource localization
+     * @param dateInMillis The date in milliseconds
+     * @return a user-friendly representation of the date.
+     */
+    public static String getFriendlyDayString(Context context, long dateInMillis){
+
+        Calendar calendar = Calendar.getInstance();
+        int currentJulianDay = calendar.get(Calendar.DAY_OF_YEAR);
+        calendar.setTimeInMillis(dateInMillis);
+        int julianDay = calendar.get(Calendar.DAY_OF_YEAR);
+
+        // The day string for forecast uses the following logic:
+        // For today: "Today, June 8"
+        // For tomorrow:  "Tomorrow"
+        // For the next 5 days: "Wednesday" (just the day name)
+        // For all days after that: "Mon Jun 8"
+
+        if(julianDay == currentJulianDay){
+            String today = context.getString(R.string.today);
+            int formatId = R.string.format_full_friendly_date;
+            //return String.format(context.getString(formatId, today, getFormattedMonthDay(context, dateInMillis)));
+            return String.format(context.getString(formatId), today, getFormattedMonthDay(context, dateInMillis));
+        } else if (julianDay < currentJulianDay + 7){
+            return getDayName(context, dateInMillis);
+        } else {
+            SimpleDateFormat shortenedDateFormat = new SimpleDateFormat("EEE MMM dd");
+            return shortenedDateFormat.format(dateInMillis);
+        }
+    }
+
+    public static String getDayName(Context context, long dateInMillis){
+        Calendar calendar = Calendar.getInstance();
+        int currentJulianDay = calendar.get(Calendar.DAY_OF_YEAR);
+        calendar.setTimeInMillis(dateInMillis);
+        int julianDay = calendar.get(Calendar.DAY_OF_YEAR);
+
+        if(julianDay == currentJulianDay){
+            return context.getString(R.string.today);
+        } else if (julianDay == currentJulianDay + 1){
+            return context.getString(R.string.tomorrow);
+        } else {
+            SimpleDateFormat shortenedDateFormat = new SimpleDateFormat("EEEE");
+            return shortenedDateFormat.format(dateInMillis);
+        }
+    }
+
+    public static String getFormattedMonthDay(Context context, long dateInMillis){
+        SimpleDateFormat dbDateFormat = new SimpleDateFormat(Utility.DATE_FORMAT);
+        SimpleDateFormat monthDayFormat = new SimpleDateFormat("MMMM dd");
+        return monthDayFormat.format(dateInMillis);
+    }
+
 }
