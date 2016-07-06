@@ -3,9 +3,11 @@ package com.example.pratu16x7.sunshinefromscratch;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import static com.example.pratu16x7.sunshinefromscratch.ForecastFragment.COL_WEATHER_DATE;
@@ -35,12 +37,41 @@ public class ForecastAdapter extends CursorAdapter {
         return (position == 0) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
     }
 
+
+    /*
+        A cache for the children views of a forecast list item
+     */
+    // Tell this to find them and hold them
+    public static class ViewHolder{
+        private final ImageView iconView;
+        private final TextView dateView;
+        private final TextView descriptionView;
+        private final TextView highTempView;
+        private final TextView lowTempView;
+
+        public ViewHolder(View view){
+            iconView = (ImageView) view.findViewById(R.id.list_item_icon);
+            dateView = (TextView)view.findViewById(R.id.list_item_date_textview);
+            descriptionView = (TextView)view.findViewById(R.id.list_item_forecast_textview);
+            highTempView = (TextView)view.findViewById(R.id.list_item_high_textview);
+            lowTempView = (TextView)view.findViewById(R.id.list_item_low_textview);
+        }
+
+    }
+
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         int viewType = getItemViewType(cursor.getPosition());
         int layoutId = (viewType == VIEW_TYPE_TODAY) ? R.layout.list_item_forecast_today
                 : R.layout.list_item_forecast;
-        return LayoutInflater.from(context).inflate(layoutId, parent, false);
+        View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
+
+        // First make the viewHolder find the smaller views and hold them
+        ViewHolder viewHolder = new ViewHolder(view);
+        // Then set it as a tag for the main view, so its has them as a property for all to use
+        view.setTag(viewHolder);
+
+        return view;
     }
 
     /*
@@ -48,28 +79,28 @@ public class ForecastAdapter extends CursorAdapter {
      */
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        // our view is pretty simple here --- just a text view
-        // we'll keep the UI functional with a simple (and slow!) binding.
+        // Since getTag returns an object, we have to cast it to our (known to be) ViewHolder type
+        ViewHolder viewHolder = (ViewHolder)view.getTag();
 
-//        TextView tv = (TextView)view;
-//        tv.setText(convertCursorRowToUXFormat(cursor));
         Boolean isMetric = Utility.isMetric(mContext);
 
-        TextView highTv = (TextView)view.findViewById(R.id.list_item_high_textview);
         String highText = Utility.formatTemperature(cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP),
                 isMetric) + "°";
-        highTv.setText(highText);
+        viewHolder.highTempView.setText(highText);
 
-        TextView lowTv = (TextView)view.findViewById(R.id.list_item_low_textview);
         String lowText = Utility.formatTemperature(cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP),
                 isMetric) + "°";
-        lowTv.setText(lowText);
+        viewHolder.lowTempView.setText(lowText);
 
-        ((TextView)view.findViewById(R.id.list_item_forecast_textview)).setText(cursor.getString(COL_WEATHER_DESC));
+        viewHolder.descriptionView.setText(cursor.getString(COL_WEATHER_DESC));
 
-        TextView dateTv = (TextView)view.findViewById(R.id.list_item_date_textview);
         String date = Utility.getFriendlyDayString(context, cursor.getLong(COL_WEATHER_DATE));
-        dateTv.setText(date);
+        viewHolder.dateView.setText(date);
+
+        //viewHolder.iconView.setImageResource(R.mipmap.ic_launcher);
+        ImageView iconView = (ImageView) view.findViewById(R.id.list_item_icon);
+        if (iconView == null) Log.v("iconView is", "null"+R.id.list_item_icon);
+        //iconView.setImageResource(R.mipmap.ic_launcher);
 
     }
 }
