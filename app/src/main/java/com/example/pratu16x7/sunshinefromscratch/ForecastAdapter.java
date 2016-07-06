@@ -3,7 +3,6 @@ package com.example.pratu16x7.sunshinefromscratch;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,6 +81,13 @@ public class ForecastAdapter extends CursorAdapter {
         // Since getTag returns an object, we have to cast it to our (known to be) ViewHolder type
         ViewHolder viewHolder = (ViewHolder)view.getTag();
 
+//        ImageView image = (ImageView) view.findViewById(R.id.image);
+//        if (image == null) Log.v("Waaaaa", "null "+ R.id.image);
+//        else Log.v("YAY!", "worked");
+//        image.setImageResource(R.mipmap.ic_launcher);
+        viewHolder.iconView.setImageResource(R.mipmap.ic_launcher);
+
+
         Boolean isMetric = Utility.isMetric(mContext);
 
         String highText = Utility.formatTemperature(cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP),
@@ -96,11 +102,5 @@ public class ForecastAdapter extends CursorAdapter {
 
         String date = Utility.getFriendlyDayString(context, cursor.getLong(COL_WEATHER_DATE));
         viewHolder.dateView.setText(date);
-
-        //viewHolder.iconView.setImageResource(R.mipmap.ic_launcher);
-        ImageView iconView = (ImageView) view.findViewById(R.id.list_item_icon);
-        if (iconView == null) Log.v("iconView is", "null"+R.id.list_item_icon);
-        //iconView.setImageResource(R.mipmap.ic_launcher);
-
     }
 }
