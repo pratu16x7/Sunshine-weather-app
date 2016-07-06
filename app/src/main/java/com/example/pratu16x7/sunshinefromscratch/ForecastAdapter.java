@@ -6,6 +6,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import static com.example.pratu16x7.sunshinefromscratch.ForecastFragment.COL_WEATHER_DATE;
@@ -17,40 +18,57 @@ import static com.example.pratu16x7.sunshinefromscratch.ForecastFragment.COL_WEA
  */
 public class ForecastAdapter extends CursorAdapter {
 
+    private final int VIEW_TYPE_COUNT = 2;
+    private final int VIEW_TYPE_TODAY = 0;
+    private final int VIEW_TYPE_FUTURE_DAY = 1;
+
     public ForecastAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
     }
 
-    /**
-     * Prepare the weather high/lows for presentation.
-     */
-    private String formatHighLows(double high, double low) {
-        boolean isMetric = com.example.pratu16x7.sunshinefromscratch.Utility.isMetric(mContext);
-        String highLowStr = com.example.pratu16x7.sunshinefromscratch.Utility.formatTemperature(high, isMetric) +
-                "/" + com.example.pratu16x7.sunshinefromscratch.Utility.formatTemperature(low, isMetric);
-        return highLowStr;
+    @Override
+    public int getViewTypeCount() {
+        return VIEW_TYPE_COUNT;
     }
 
-    /*
-        This is ported from FetchWeatherTask --- but now we go straight from the cursor to the
-        string.
-     */
-    private String convertCursorRowToUXFormat(Cursor cursor) {
-        String highAndLow = formatHighLows(
-                cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP),
-                cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP));
-
-        return com.example.pratu16x7.sunshinefromscratch.Utility.formatDate(cursor.getLong(COL_WEATHER_DATE)) +
-                " - " + cursor.getString(COL_WEATHER_DESC) +
-                " - " + highAndLow;
+    @Override
+    public int getItemViewType(int position) {
+        return (position == 0) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
     }
 
+
     /*
-        Remember that these views are reused as needed.
+        A cache for the children views of a forecast list item
      */
+    // Tell this to find them and hold them
+    public static class ViewHolder{
+        private final ImageView iconView;
+        private final TextView dateView;
+        private final TextView descriptionView;
+        private final TextView highTempView;
+        private final TextView lowTempView;
+
+        public ViewHolder(View view){
+            iconView = (ImageView) view.findViewById(R.id.list_item_icon);
+            dateView = (TextView)view.findViewById(R.id.list_item_date_textview);
+            descriptionView = (TextView)view.findViewById(R.id.list_item_forecast_textview);
+            highTempView = (TextView)view.findViewById(R.id.list_item_high_textview);
+            lowTempView = (TextView)view.findViewById(R.id.list_item_low_textview);
+        }
+
+    }
+
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.list_item_forecast, parent, false);
+        int viewType = getItemViewType(cursor.getPosition());
+        int layoutId = (viewType == VIEW_TYPE_TODAY) ? R.layout.list_item_forecast_today
+                : R.layout.list_item_forecast;
+        View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
+
+        // First make the viewHolder find the smaller views and hold them
+        ViewHolder viewHolder = new ViewHolder(view);
+        // Then set it as a tag for the main view, so its has them as a property for all to use
+        view.setTag(viewHolder);
 
         return view;
     }
@@ -60,28 +78,29 @@ public class ForecastAdapter extends CursorAdapter {
      */
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        // our view is pretty simple here --- just a text view
-        // we'll keep the UI functional with a simple (and slow!) binding.
+        // Since getTag returns an object, we have to cast it to our (known to be) ViewHolder type
+        ViewHolder viewHolder = (ViewHolder)view.getTag();
 
-//        TextView tv = (TextView)view;
-//        tv.setText(convertCursorRowToUXFormat(cursor));
+//        ImageView image = (ImageView) view.findViewById(R.id.image);
+//        if (image == null) Log.v("Waaaaa", "null "+ R.id.image);
+//        else Log.v("YAY!", "worked");
+//        image.setImageResource(R.mipmap.ic_launcher);
+        viewHolder.iconView.setImageResource(R.mipmap.ic_launcher);
+
+
         Boolean isMetric = Utility.isMetric(mContext);
 
-        TextView highTv = (TextView)view.findViewById(R.id.list_item_high_textview);
-        String highText = Utility.formatTemperature(cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP),
-                isMetric) + "°";
-        highTv.setText(highText);
+        String highText = Utility.formatTemperature(mContext, cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP),
+                isMetric);
+        viewHolder.highTempView.setText(highText);
 
-        TextView lowTv = (TextView)view.findViewById(R.id.list_item_low_textview);
-        String lowText = Utility.formatTemperature(cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP),
-                isMetric) + "°";
-        lowTv.setText(lowText);
+        String lowText = Utility.formatTemperature(mContext, cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP),
+                isMetric);
+        viewHolder.lowTempView.setText(lowText);
 
-        ((TextView)view.findViewById(R.id.list_item_forecast_textview)).setText(cursor.getString(COL_WEATHER_DESC));
+        viewHolder.descriptionView.setText(cursor.getString(COL_WEATHER_DESC));
 
-        TextView dateTv = (TextView)view.findViewById(R.id.list_item_date_textview);
         String date = Utility.getFriendlyDayString(context, cursor.getLong(COL_WEATHER_DATE));
-        dateTv.setText(date);
-
+        viewHolder.dateView.setText(date);
     }
 }

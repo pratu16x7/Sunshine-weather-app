@@ -2,16 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:id="@+id/list_item_forecast_linear"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
     >
     <ImageView
-        android:id="@+id/list_item_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher"
-        android:contentDescription="Forecast Icon" />
+        android:id="@+id/list_item_icon"/>
     <LinearLayout android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
