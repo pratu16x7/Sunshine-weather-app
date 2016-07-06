@@ -17,42 +17,30 @@ import static com.example.pratu16x7.sunshinefromscratch.ForecastFragment.COL_WEA
  */
 public class ForecastAdapter extends CursorAdapter {
 
+    private final int VIEW_TYPE_COUNT = 2;
+    private final int VIEW_TYPE_TODAY = 0;
+    private final int VIEW_TYPE_FUTURE_DAY = 1;
+
     public ForecastAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
     }
 
-    /**
-     * Prepare the weather high/lows for presentation.
-     */
-    private String formatHighLows(double high, double low) {
-        boolean isMetric = com.example.pratu16x7.sunshinefromscratch.Utility.isMetric(mContext);
-        String highLowStr = com.example.pratu16x7.sunshinefromscratch.Utility.formatTemperature(high, isMetric) +
-                "/" + com.example.pratu16x7.sunshinefromscratch.Utility.formatTemperature(low, isMetric);
-        return highLowStr;
+    @Override
+    public int getViewTypeCount() {
+        return VIEW_TYPE_COUNT;
     }
 
-    /*
-        This is ported from FetchWeatherTask --- but now we go straight from the cursor to the
-        string.
-     */
-    private String convertCursorRowToUXFormat(Cursor cursor) {
-        String highAndLow = formatHighLows(
-                cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP),
-                cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP));
-
-        return com.example.pratu16x7.sunshinefromscratch.Utility.formatDate(cursor.getLong(COL_WEATHER_DATE)) +
-                " - " + cursor.getString(COL_WEATHER_DESC) +
-                " - " + highAndLow;
+    @Override
+    public int getItemViewType(int position) {
+        return (position == 0) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
     }
 
-    /*
-        Remember that these views are reused as needed.
-     */
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.list_item_forecast, parent, false);
-
-        return view;
+        int viewType = getItemViewType(cursor.getPosition());
+        int layoutId = (viewType == VIEW_TYPE_TODAY) ? R.layout.list_item_forecast_today
+                : R.layout.list_item_forecast;
+        return LayoutInflater.from(context).inflate(layoutId, parent, false);
     }
 
     /*
