@@ -33,6 +33,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pratu16x7.sunshinefromscratch.data.WeatherContract;
@@ -43,6 +44,9 @@ public class DetailActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        /*
+            Removing following causes the fragment to not inflate twice
+        */
 //        if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction()
 //                    .add(R.id.container, new DetailFragment())
@@ -104,10 +108,11 @@ public class DetailActivity extends ActionBarActivity {
                 WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
                 WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
                 WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
-                WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING,
-                WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
-                WeatherContract.LocationEntry.COLUMN_COORD_LAT,
-                WeatherContract.LocationEntry.COLUMN_COORD_LONG
+                WeatherContract.WeatherEntry.COLUMN_HUMIDITY,
+                WeatherContract.WeatherEntry.COLUMN_WIND_SPEED,
+                WeatherContract.WeatherEntry.COLUMN_DEGREES,
+                WeatherContract.WeatherEntry.COLUMN_PRESSURE
+
         };
 
         // These indices are tied to FORECAST_COLUMNS.  If FORECAST_COLUMNS changes, these
@@ -117,10 +122,10 @@ public class DetailActivity extends ActionBarActivity {
         static final int COL_WEATHER_DESC = 2;
         static final int COL_WEATHER_MAX_TEMP = 3;
         static final int COL_WEATHER_MIN_TEMP = 4;
-        static final int COL_LOCATION_SETTING = 5;
-        static final int COL_WEATHER_CONDITION_ID = 6;
-        static final int COL_COORD_LAT = 7;
-        static final int COL_COORD_LONG = 8;
+        static final int COL_HUMIDITY = 5;
+        static final int COL_WIND_SPEED = 6;
+        static final int COL_DEGREES = 7;
+        static final int COL_PRESSURE = 8;
 
         public DetailFragment() {
             setHasOptionsMenu(true);
@@ -141,16 +146,36 @@ public class DetailActivity extends ActionBarActivity {
         public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
             if (!cursor.moveToFirst()) { return; }
 
-            String date = Utility.formatDate(cursor.getLong(COL_WEATHER_DATE));
-            String shortDesc = cursor.getString(COL_WEATHER_DESC);
+            long dateInMillis = cursor.getLong(COL_WEATHER_DATE);
+            String date = Utility.formatDate(dateInMillis);
+            String day = Utility.getDayName(getActivity(), dateInMillis);
+            String monthDate = Utility.getFormattedMonthDay(getActivity(), dateInMillis);
 
             Boolean isMetric = Utility.isMetric(getActivity());
-
             String maxTemp = Utility.formatTemperature(getActivity(), cursor.getDouble(COL_WEATHER_MAX_TEMP), isMetric);
             String minTemp = Utility.formatTemperature(getActivity(), cursor.getDouble(COL_WEATHER_MIN_TEMP), isMetric);
 
+            String shortDesc = cursor.getString(COL_WEATHER_DESC);
+
+            String humidity = Utility.formatHumidity(getActivity(), cursor.getDouble(COL_HUMIDITY));
+            String wind = Utility.formatWind(getActivity(), cursor.getDouble(COL_WIND_SPEED), cursor.getDouble(COL_DEGREES));
+            String pressure = Utility.formatPressure(getActivity(), cursor.getDouble(COL_PRESSURE));
+
+
+            ImageView image = (ImageView) getView().findViewById(R.id.detail_icon);
+            image.setImageResource(R.mipmap.ic_launcher);
+
+            ((TextView) getView().findViewById(R.id.detail_day)).setText(day);
+            ((TextView) getView().findViewById(R.id.detail_month_date)).setText(monthDate);
+            ((TextView) getView().findViewById(R.id.detail_high_temp)).setText(maxTemp);
+            ((TextView) getView().findViewById(R.id.detail_low_temp)).setText(minTemp);
+            ((TextView) getView().findViewById(R.id.detail_forecast)).setText(shortDesc);
+            ((TextView) getView().findViewById(R.id.detail_humidity)).setText(humidity);
+            ((TextView) getView().findViewById(R.id.detail_wind)).setText(wind);
+            ((TextView) getView().findViewById(R.id.detail_pressure)).setText(pressure);
+
             mForecastStr = String.format("%s - %s - %s/%s", date,shortDesc, maxTemp, minTemp);
-            ((TextView)getView().findViewById(R.id.details)).setText(mForecastStr);
+            //((TextView)getView().findViewById(R.id.details)).setText(mForecastStr);
 
             // If onCreateOptionsMenu has already happened, we need to update the share intent now
             if (mShareActionProvider != null){
