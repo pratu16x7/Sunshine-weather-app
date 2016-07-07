@@ -43,18 +43,18 @@ public class DetailActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new DetailFragment())
-                    .commit();
-        }
+//        if (savedInstanceState == null) {
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.container, new DetailFragment())
+//                    .commit();
+//        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_detail, menu);
-        getMenuInflater().inflate(R.menu.detailfragment, menu);
+        //getMenuInflater().inflate(R.menu.detailfragment, menu);
         return true;
     }
 
@@ -91,7 +91,6 @@ public class DetailActivity extends ActionBarActivity {
         private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
         private String mForecastStr;
         public static final int DetailLoaderID = 1;
-        View rootView;
 
         private static final String[] FORECAST_COLUMNS = {
                 // In this case the id needs to be fully qualified with a table name, since
@@ -167,7 +166,7 @@ public class DetailActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
-            rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
             return rootView;
         }
@@ -175,7 +174,7 @@ public class DetailActivity extends ActionBarActivity {
         @Override
         public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
             // Inflate the menu; this adds items to the action bar if it is present.
-
+            inflater.inflate(R.menu.detailfragment, menu);
 
             // Retrieve the share menu item
             MenuItem menuItem = menu.findItem(R.id.action_share);
