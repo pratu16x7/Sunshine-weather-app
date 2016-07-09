@@ -85,8 +85,14 @@ public class ForecastAdapter extends CursorAdapter {
 //        if (image == null) Log.v("Waaaaa", "null "+ R.id.image);
 //        else Log.v("YAY!", "worked");
 //        image.setImageResource(R.mipmap.ic_launcher);
-        viewHolder.iconView.setImageResource(R.mipmap.ic_launcher);
 
+        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
+        //viewHolder.iconView.setImageResource(R.mipmap.ic_launcher);
+        if(getItemViewType(cursor.getPosition()) == VIEW_TYPE_TODAY){
+            viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
+        } else {
+            viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(weatherId));
+        }
 
         Boolean isMetric = Utility.isMetric(mContext);
 
