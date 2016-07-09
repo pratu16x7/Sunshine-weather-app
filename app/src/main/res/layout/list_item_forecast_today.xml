@@ -16,18 +16,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/list_item_date_textview"
-            android:text="Today, July 4"/>
+            android:id="@+id/list_item_date_textview"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/list_item_high_textview"
-            android:text="22°"/>
+            android:id="@+id/list_item_high_textview"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/list_item_low_textview"
-            android:text="20°"/>
+            android:id="@+id/list_item_low_textview"/>
     </LinearLayout>
 
     <LinearLayout
@@ -40,13 +37,11 @@
         <ImageView
             android:id="@+id/list_item_icon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher"/>
+            android:layout_height="wrap_content"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/list_item_forecast_textview"
-            android:text="Rainy"/>
+            android:id="@+id/list_item_forecast_textview"/>
     </LinearLayout>
 
 </LinearLayout>
