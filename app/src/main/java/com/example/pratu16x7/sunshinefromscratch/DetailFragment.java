@@ -103,7 +103,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         String pressure = Utility.formatPressure(getActivity(), cursor.getDouble(COL_PRESSURE));
 
         int weatherId = cursor.getInt(COL_WEATHER_FORECAST_ID);
-        mIconIv.setImageResource(R.mipmap.ic_launcher);
+        mIconIv.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
 
         mDayTv.setText(day);
         mMonthDateTv.setText(monthDate);
