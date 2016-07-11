@@ -35,7 +35,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     ImageView mIconIv;
     TextView mDayTv, mMonthDateTv, mMaxTempTv, mMinTempTv, mDescTv, mHumidityTv, mWindTv, mPressureTv;
 
-    private static final String[] FORECAST_COLUMNS = {
+    private static final String[] DETAIL_COLUMNS = {
             // In this case the id needs to be fully qualified with a table name, since
             // the content provider joins the location & weather tables in the background
             // (both have an _id column)
@@ -80,8 +80,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Intent intent = getActivity().getIntent();
-        if (intent == null) { return null; }
-        return new CursorLoader(getActivity(), intent.getData(), FORECAST_COLUMNS, null, null, null);
+        // Don't create loader if no intent or the intent has no URI(when in 2pane, it'll be part of mainAct which has no URI init)
+        if (intent == null || intent.getData() == null) { return null; }
+        return new CursorLoader(getActivity(), intent.getData(), DETAIL_COLUMNS, null, null, null);
     }
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
