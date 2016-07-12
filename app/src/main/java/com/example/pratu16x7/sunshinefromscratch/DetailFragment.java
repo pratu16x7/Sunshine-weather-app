@@ -2,6 +2,7 @@ package com.example.pratu16x7.sunshinefromscratch;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -32,6 +33,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
     private String mForecastStr;
     public static final int DetailLoaderID = 1;
+    static final String DETAIL_URI = "URI";
+    private Uri mUri;
     ImageView mIconIv;
     TextView mDayTv, mMonthDateTv, mMaxTempTv, mMinTempTv, mDescTv, mHumidityTv, mWindTv, mPressureTv;
 
@@ -72,6 +75,18 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         setHasOptionsMenu(true);
     }
 
+
+    void onLocationChanged(String newLocation ) {
+        // replace the uri, since the location has changed
+        Uri uri = mUri;
+        if (null != uri) {
+            long date = WeatherContract.WeatherEntry.getDateFromUri(uri);
+            Uri updatedUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(newLocation, date);
+            mUri = updatedUri;
+            getLoaderManager().restartLoader(DetailLoaderID, null, this);
+        }
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -79,10 +94,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     }
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Intent intent = getActivity().getIntent();
-        // Don't create loader if no intent or the intent has no URI(when in 2pane, it'll be part of mainAct which has no URI init)
-        if (intent == null || intent.getData() == null) { return null; }
-        return new CursorLoader(getActivity(), intent.getData(), DETAIL_COLUMNS, null, null, null);
+        if (mUri != null) {
+            return new CursorLoader(getActivity(), mUri, DETAIL_COLUMNS, null, null, null);
+        }
+        return  null;
     }
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
@@ -131,6 +146,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Bundle args = getArguments();
+        if(args != null){
+            mUri = args.getParcelable(DETAIL_URI);
+        }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
