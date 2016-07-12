@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
 
     @Override
     public void onItemSelected(Uri dateUri) {
-        if (mTwoPane = false){
+        if (mTwoPane == false){
             Intent intent = new Intent(this, DetailActivity.class)
                     .setData(dateUri);
             startActivity(intent);

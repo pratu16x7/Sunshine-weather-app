@@ -28,11 +28,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/detail_day" android:text="Today"/>
+            android:id="@+id/detail_day" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/detail_month_date" android:text="Today"/>
+            android:id="@+id/detail_month_date" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -48,11 +48,11 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/detail_high_temp" android:text="Today"/>
+                    android:id="@+id/detail_high_temp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/detail_low_temp" android:text="Today"/>
+                    android:id="@+id/detail_low_temp" />
 
             </LinearLayout>
 
@@ -70,7 +70,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/detail_forecast" android:text="Today"/>
+                    android:id="@+id/detail_forecast" />
 
             </LinearLayout>
 
@@ -79,15 +79,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/detail_humidity" android:text="Today"/>
+            android:id="@+id/detail_humidity" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/detail_wind" android:text="Today"/>
+            android:id="@+id/detail_wind" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/detail_pressure" android:text="Today"/>
+            android:id="@+id/detail_pressure" />
 
         <!--<TextView-->
         <!--android:layout_width="wrap_content"-->

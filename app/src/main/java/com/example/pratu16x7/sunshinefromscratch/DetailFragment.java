@@ -152,6 +152,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mUri = args.getParcelable(DETAIL_URI);
         }
 
+        if (container != null) {
+            container.removeAllViews();
+        }
+
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         mIconIv = (ImageView) rootView.findViewById(R.id.detail_icon);
@@ -171,7 +175,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.detailfragment, menu);
+        //inflater.inflate(R.menu.detailfragment, menu);
 
         // Retrieve the share menu item
         MenuItem menuItem = menu.findItem(R.id.action_share);
