@@ -11,6 +11,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -172,14 +173,24 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         return rootView;
     }
 
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        //inflater.inflate(R.menu.detailfragment, menu);
+
+        //This method is called twice
+        Log.v("CALLED", "menucreate");
+        //This doesn't work:
+        //if(menu.findItem(R.menu.detailfragment)==null)
+        //menu.removeItem(R.menu.detailfragment);
+
+        //Better to clear and do all of the inflating here, leave nothing to DetailActivity
+        menu.clear();
+        inflater.inflate(R.menu.menu_detail, menu);
+        inflater.inflate(R.menu.detailfragment, menu);
 
         // Retrieve the share menu item
         MenuItem menuItem = menu.findItem(R.id.action_share);
-
         // Get the provider and hold onto it to set/change the share intent.
         mShareActionProvider =
                 (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
