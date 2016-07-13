@@ -2,6 +2,7 @@ package com.example.pratu16x7.sunshinefromscratch;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,10 +34,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
     private String mForecastStr;
     public static final int DetailLoaderID = 1;
+    static final String DETAIL_URI = "URI";
+    private Uri mUri;
     ImageView mIconIv;
     TextView mDayTv, mMonthDateTv, mMaxTempTv, mMinTempTv, mDescTv, mHumidityTv, mWindTv, mPressureTv;
 
-    private static final String[] FORECAST_COLUMNS = {
+    private static final String[] DETAIL_COLUMNS = {
             // In this case the id needs to be fully qualified with a table name, since
             // the content provider joins the location & weather tables in the background
             // (both have an _id column)
@@ -72,6 +76,18 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         setHasOptionsMenu(true);
     }
 
+
+    void onLocationChanged(String newLocation ) {
+        // replace the uri, since the location has changed
+        Uri uri = mUri;
+        if (null != uri) {
+            long date = WeatherContract.WeatherEntry.getDateFromUri(uri);
+            Uri updatedUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(newLocation, date);
+            mUri = updatedUri;
+            getLoaderManager().restartLoader(DetailLoaderID, null, this);
+        }
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -79,9 +95,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     }
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Intent intent = getActivity().getIntent();
-        if (intent == null) { return null; }
-        return new CursorLoader(getActivity(), intent.getData(), FORECAST_COLUMNS, null, null, null);
+        if (mUri != null) {
+            return new CursorLoader(getActivity(), mUri, DETAIL_COLUMNS, null, null, null);
+        }
+        return  null;
     }
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
@@ -131,6 +148,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        Bundle args = getArguments();
+        if(args != null){
+            mUri = args.getParcelable(DETAIL_URI);
+        }
+
+        if (container != null) {
+            container.removeAllViews();
+        }
+
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         mIconIv = (ImageView) rootView.findViewById(R.id.detail_icon);
@@ -147,14 +173,24 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         return rootView;
     }
 
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
+
+        //This method is called twice
+        Log.v("CALLED", "menucreate");
+        //This doesn't work:
+        //if(menu.findItem(R.menu.detailfragment)==null)
+        //menu.removeItem(R.menu.detailfragment);
+
+        //Better to clear and do all of the inflating here, leave nothing to DetailActivity
+        menu.clear();
+        inflater.inflate(R.menu.menu_detail, menu);
         inflater.inflate(R.menu.detailfragment, menu);
 
         // Retrieve the share menu item
         MenuItem menuItem = menu.findItem(R.id.action_share);
-
         // Get the provider and hold onto it to set/change the share intent.
         mShareActionProvider =
                 (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
