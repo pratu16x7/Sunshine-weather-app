@@ -36,6 +36,14 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     Callback mListener;
     private ListView mListView;
     private int mPosition = ListView.INVALID_POSITION;
+    private boolean mUseTodayLayout;
+
+    public void setmUseTodayLayout(boolean useTodayLayout){
+        mUseTodayLayout = useTodayLayout;
+        if(myForecastAdapter != null){
+            myForecastAdapter.setmUseTodayLayout(mUseTodayLayout);
+        }
+    }
 
     private static final String SELECTED_KEY = "selected_position";
 
@@ -208,6 +216,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             // swapout in onLoadFinished.
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
+        // This is the actual setting up, in the setter we just do it for future uses as a public method
+        myForecastAdapter.setmUseTodayLayout(mUseTodayLayout);
         return rootView;
     }
 
