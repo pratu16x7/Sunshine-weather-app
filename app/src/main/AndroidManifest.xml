@@ -40,8 +40,9 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.pratu16x7.sunshinefromscratch.MainActivity" />
-        </activity>
 
+        </activity>
+        <service android:name=".service.SunshineService"/>
     </application>
 
     <!--android:configChanges="keyboardHidden|orientation|screenSize"-->

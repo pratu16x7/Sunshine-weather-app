@@ -1,11 +1,10 @@
 package com.example.pratu16x7.sunshinefromscratch;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -21,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.pratu16x7.sunshinefromscratch.data.WeatherContract;
+import com.example.pratu16x7.sunshinefromscratch.service.SunshineService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,12 +111,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     private void updateWeather() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String zipcode = sharedPref.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
-
-        FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
-        weatherTask.execute(zipcode); // execute(), not doInBackground() :P  "1253372"
-
+        Intent serviceIntent = new Intent(getActivity(), SunshineService.class);
+        serviceIntent.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
+                Utility.getPreferredLocation(getActivity()));
+        getActivity().startService(serviceIntent);
     }
 
     protected void onLocationChanged() {
