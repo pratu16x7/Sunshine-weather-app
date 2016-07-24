@@ -1,6 +1,9 @@
 package com.example.pratu16x7.sunshinefromscratch;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -37,6 +40,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private ListView mListView;
     private int mPosition = ListView.INVALID_POSITION;
     private boolean mUseTodayLayout;
+    private AlarmManager alarmMgr;
+    private PendingIntent pendingIntent;
 
     public void setmUseTodayLayout(boolean useTodayLayout){
         mUseTodayLayout = useTodayLayout;
@@ -111,10 +116,15 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     private void updateWeather() {
-        Intent serviceIntent = new Intent(getActivity(), SunshineService.class);
+        Intent serviceIntent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
         serviceIntent.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
                 Utility.getPreferredLocation(getActivity()));
-        getActivity().startService(serviceIntent);
+
+        alarmMgr = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+        pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, serviceIntent, PendingIntent.FLAG_ONE_SHOT);
+        alarmMgr.set(AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis() +
+                        3 * 1000, pendingIntent);
     }
 
     protected void onLocationChanged() {
