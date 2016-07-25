@@ -1,18 +1,23 @@
-package com.example.pratu16x7.sunshinefromscratch.service;
+package com.example.pratu16x7.sunshinefromscratch.sync;
 
-import android.app.IntentService;
-import android.content.BroadcastReceiver;
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.AbstractThreadedSyncAdapter;
+import android.content.ContentProviderClient;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
+import android.content.SyncResult;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.text.format.Time;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.example.pratu16x7.sunshinefromscratch.BuildConfig;
+import com.example.pratu16x7.sunshinefromscratch.R;
+import com.example.pratu16x7.sunshinefromscratch.Utility;
 import com.example.pratu16x7.sunshinefromscratch.data.WeatherContract;
 
 import org.json.JSONArray;
@@ -27,22 +32,19 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Vector;
 
-/**
- * Created by pratu16x7 on 7/23/16.
- */
+public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
+    public final String LOG_TAG = SunshineSyncAdapter.class.getSimpleName();
+    private final Context mContext;
 
-public class SunshineService extends IntentService {
-    private ArrayAdapter<String> mForecastAdapter;
-    public static final String LOCATION_QUERY_EXTRA = "lqe";
-    private final String LOG_TAG = SunshineService.class.getSimpleName();
-
-    public SunshineService(){
-        super("SunshineService");
+    public SunshineSyncAdapter(Context context, boolean autoInitialize) {
+        super(context, autoInitialize);
+        mContext = context;
     }
-    @Override
-    protected void onHandleIntent(Intent intent) {
 
-        String locationQuery = intent.getStringExtra(LOCATION_QUERY_EXTRA);
+    @Override
+    public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+        Log.d(LOG_TAG, "onPerformSync Called.");
+        String locationQuery = Utility.getPreferredLocation(mContext);
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
@@ -128,6 +130,18 @@ public class SunshineService extends IntentService {
 
         // This will only happen if there was an error getting or parsing the forecast.
         return;
+    }
+
+    /**
+     * Helper method to have the sync adapter sync immediately
+     * @param context The context used to access the account service
+     */
+    public static void syncImmediately(Context context) {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        ContentResolver.requestSync(getSyncAccount(context),
+                context.getString(R.string.content_authority), bundle);
     }
 
     /**
@@ -265,7 +279,7 @@ public class SunshineService extends IntentService {
                 // Student: call bulkInsert to add the weatherEntries to the database here
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cvArray);
-                this.getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, cvArray);
+                mContext.getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, cvArray);
             }
 
             Log.d(LOG_TAG, "Sunshine Service Complete. " + cVVector.size() + " Inserted");
@@ -293,7 +307,7 @@ public class SunshineService extends IntentService {
         // Otherwise, insert it using the content resolver and the base URI
         long locationId;
 
-        Cursor c = this.getContentResolver().query(
+        Cursor c = mContext.getContentResolver().query(
                 WeatherContract.LocationEntry.CONTENT_URI,
                 new String[] {WeatherContract.LocationEntry._ID}, // leaving "columns" null just returns all the columns.
                 WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + "= ?", // cols for "where" clause
@@ -313,20 +327,47 @@ public class SunshineService extends IntentService {
             values.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, lat);
             values.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, lon);
 
-            Uri insertedUri = this.getContentResolver().insert(WeatherContract.LocationEntry.CONTENT_URI, values);
+            Uri insertedUri = mContext.getContentResolver().insert(WeatherContract.LocationEntry.CONTENT_URI, values);
             locationId = ContentUris.parseId(insertedUri);
 
         }
         return locationId;
     }
+    /**
+     * Helper method to get the fake account to be used with SyncAdapter, or make a new one
+     * if the fake account doesn't exist yet.  If we make a new account, we call the
+     * onAccountCreated method so we can initialize things.
+     *
+     * @param context The context used to access the account service
+     * @return a fake account.
+     */
+    public static Account getSyncAccount(Context context) {
+        // Get an instance of the Android account manager
+        AccountManager accountManager =
+                (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
 
-    public static class AlarmReceiver extends BroadcastReceiver{
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Intent sendIntent = new Intent(context, SunshineService.class);
-            sendIntent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, intent.getStringExtra(SunshineService.LOCATION_QUERY_EXTRA));
-            context.startService(sendIntent);
+        // Create the account type and default account
+        Account newAccount = new Account(
+                context.getString(R.string.app_name), context.getString(R.string.sync_account_type));
+
+        // If the password doesn't exist, the account doesn't exist
+        if ( null == accountManager.getPassword(newAccount) ) {
+
+        /*
+         * Add the account and account type, no password or user data
+         * If successful, return the Account object, otherwise report an error.
+         */
+            if (!accountManager.addAccountExplicitly(newAccount, "", null)) {
+                return null;
+            }
+            /*
+             * If you don't set android:syncable="true" in
+             * in your <provider> element in the manifest,
+             * then call ContentResolver.setIsSyncable(account, AUTHORITY, 1)
+             * here.
+             */
+
         }
+        return newAccount;
     }
-
 }

@@ -3,8 +3,6 @@ package com.example.pratu16x7.sunshinefromscratch;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,7 +21,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.pratu16x7.sunshinefromscratch.data.WeatherContract;
-import com.example.pratu16x7.sunshinefromscratch.service.SunshineService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,15 +113,17 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     private void updateWeather() {
-        Intent serviceIntent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
-        serviceIntent.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
-                Utility.getPreferredLocation(getActivity()));
+//        Intent serviceIntent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
+//        serviceIntent.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
+//                Utility.getPreferredLocation(getActivity()));
+//
+//        alarmMgr = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+//        pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, serviceIntent, PendingIntent.FLAG_ONE_SHOT);
+//        alarmMgr.set(AlarmManager.RTC_WAKEUP,
+//                System.currentTimeMillis() +
+//                        3 * 1000, pendingIntent);
+        com.example.pratu16x7.sunshinefromscratch.sync.SunshineSyncAdapter.syncImmediately(getActivity());
 
-        alarmMgr = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
-        pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, serviceIntent, PendingIntent.FLAG_ONE_SHOT);
-        alarmMgr.set(AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis() +
-                        3 * 1000, pendingIntent);
     }
 
     protected void onLocationChanged() {
